@@ -1,4 +1,4 @@
-var descriptions = document.getElementsByClassName("problemDescription")
+var descriptions = document.getElementsByClassName("problemDescription");
 var firstDesc = descriptions[0];
 var descriptionText = firstDesc.innerHTML;
 var link = descriptionText.match(/Screenshot link: (.*)/)[1]
