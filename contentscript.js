@@ -1,8 +1,9 @@
-var descriptions = document.getElementsByClassName("problemDescription");
+var buildScriptProblemsWrapper = document.getElementsByClassName("expandCollapseContainer")[0].children[0];
+var problemDescriptions = buildScriptProblemsWrapper.getElementsByClassName("problemDescription");
 
-var arrayLength = descriptions.length;
-for (var i = 0; i < arrayLength - 1; i++) {
-    var description = descriptions[i];
+var arrayLength = problemDescriptions.length;
+for (var i = 0; i < arrayLength; i++) {
+    var description = problemDescriptions[i];
     var descriptionText = description.innerHTML;
     var link = descriptionText.match(/Screenshot link: (.*)/)[1];
     var decodedLink = link.replace(/&amp;/g, '&');
