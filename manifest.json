@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
 
-  "name": "Getting started example",
-  "description": "This extension shows a Google Image search result for the current page",
+  "name": "Linker",
+  "description": "This extension Transforms team city build problems screenshot url's into clickable links",
   "version": "1.0",
 
   "browser_action": {
