@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
-  "name": "Linker",
-  "description": "This extension Transforms team city build problems screenshot url's into clickable links",
+  "name": "LinkShot",
+  "description": "Transforms screenshot links inside team city build problems into hyperlinks",
   "version": "1.0",
 
   "browser_action": {
