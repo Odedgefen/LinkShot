@@ -1,4 +1,4 @@
-var linkRegex = /Screenshot link: (.*)/;
+var linkRegex =/(.*)(https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})/;
 
 var appendLinkToDescription = function (description, link) {
     var a = document.createElement('a');
@@ -8,16 +8,19 @@ var appendLinkToDescription = function (description, link) {
     description.appendChild(a);
 };
 
+var extractDecodedLinkFromString = function (str) {
+    var link = str.match(linkRegex)[2];
+    return link.replace(/&amp;/g, '&');
+};
+
 var buildScriptProblemsWrapper = document.getElementsByClassName("expandCollapseContainer")[0].children[0];
 var problemDescriptions = buildScriptProblemsWrapper.getElementsByClassName("problemDescription");
-var arrayLength = problemDescriptions.length;
-for (var i = 0; i < arrayLength; i++) {
-    var description = problemDescriptions[i];
-    var descriptionText = description.innerHTML;
-    var link = descriptionText.match(linkRegex)[1];
-    var decodedLink = link.replace(/&amp;/g, '&');
-    description.innerHTML = descriptionText.replace(linkRegex, "Screenshot: ");
-    appendLinkToDescription(description, decodedLink);
+var numOfProblems = problemDescriptions.length;
+for (var i = 0; i < numOfProblems; i++) {
+    var descriptionText = problemDescriptions[i].innerHTML;
+    var decodedLink = extractDecodedLinkFromString(descriptionText);
+    problemDescriptions[i].innerHTML = descriptionText.match(linkRegex)[1];
+    appendLinkToDescription(problemDescriptions[i], decodedLink);
 }
 
 
