@@ -1,4 +1,4 @@
-var linkRegex =/(.*)(https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})/;
+var linkRegex =/(.*)(https?:\/[-a-zA-Z0-9+&@#\/()%?=~_|!:,.;]*[-a-zA-Z0-9+&@#\/()%=~_|])((.|\n)*)/;
 
 var appendLinkToDescription = function (description, link) {
     var a = document.createElement('a');
