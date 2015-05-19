@@ -20,20 +20,20 @@ var extractDecodedLinkFromString = function (str) {
 };
 
 var waitForStackTraceAndLink = function (testLink) {
-    var stackTrace = testLink.nextSibling.getElementsByClassName("fullStacktrace")[0];
-    if (stackTrace && stackTrace.innerHTML) {
-        var stack = stackTrace.innerHTML;
-        if (stack.indexOf("applitools") == -1) {
+    var stackTraceWrapper = testLink.nextSibling.getElementsByClassName("fullStacktrace")[0];
+    if (stackTraceWrapper && stackTraceWrapper.innerHTML) {
+        var stackTrace = stackTraceWrapper.innerHTML;
+        if (stackTrace.indexOf("applitools") == -1) {
             return;
         }
 
-        var beforeURL = stack.match(linkRegex)[1];
-        var decodedLink = extractDecodedLinkFromString(stack);
-        var afterUrl = stack.match(linkRegex)[3];
-        stackTrace.innerHTML = "";
-        appendSpanWithInnerText(stackTrace, beforeURL);
-        appendLinkToDescription(stackTrace, decodedLink, decodedLink);
-        appendSpanWithInnerText(stackTrace, afterUrl);
+        stackTraceWrapper.innerHTML = "";
+        var beforeURL = stackTrace.match(linkRegex)[1];
+        var decodedLink = extractDecodedLinkFromString(stackTrace);
+        var afterUrl = stackTrace.match(linkRegex)[3];
+        appendSpanWithInnerText(stackTraceWrapper, beforeURL);
+        appendLinkToDescription(stackTraceWrapper, decodedLink, decodedLink);
+        appendSpanWithInnerText(stackTraceWrapper, afterUrl);
     } else {
         setTimeout(waitForStackTraceAndLink, 500, testLink);
     }
@@ -58,16 +58,16 @@ var linkBuildProblems = function () {
 var linkStackTrace = function () {
     var testLists = document.getElementById("idfailedDl").getElementsByClassName("testList");
     var numOfTestLists = testLists.length;
-    for (var j = 0; j < numOfTestLists; j++) {
-        var testsCollection = testLists[j].rows;
-        var tests = [].slice.call(testsCollection);
-        var numOfTests = tests.length;
-        for (var i = 0; i < numOfTests; i++) {
-            var testLink = tests[i].getElementsByClassName("testWithDetails")[0];
-            if (testLink && !tests[i].id) {
+    for (var currTestList = 0; currTestList < numOfTestLists; currTestList++) {
+        var testsCollection = testLists[currTestList].rows;
+        var testsArray = [].slice.call(testsCollection);
+        var numOfTests = testsArray.length;
+        for (var currTestTableRow = 0; currTestTableRow < numOfTests; currTestTableRow++) {
+            var testLink = testsArray[currTestTableRow].getElementsByClassName("testWithDetails")[0];
+            if (testLink && !testsArray[currTestTableRow].id) {
                 testLink.click();
                 testLink.click();
-                waitForStackTraceAndLink(tests[i]);
+                waitForStackTraceAndLink(testsArray[currTestTableRow]);
             }
         }
     }
