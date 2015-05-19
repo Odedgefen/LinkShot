@@ -19,10 +19,14 @@ var extractDecodedLinkFromString = function (str) {
     return link.replace(/&amp;/g, '&');
 };
 
-var waitForStackTraceAndLink = function (id) {
-    var stackTrace = document.getElementById(id).getElementsByClassName("fullStacktrace")[0];
+var waitForStackTraceAndLink = function (testLink) {
+    var stackTrace = testLink.nextSibling.getElementsByClassName("fullStacktrace")[0];
     if (stackTrace && stackTrace.innerHTML) {
         var stack = stackTrace.innerHTML;
+        if (stack.indexOf("applitools") == -1) {
+            return;
+        }
+
         var beforeURL = stack.match(linkRegex)[1];
         var decodedLink = extractDecodedLinkFromString(stack);
         var afterUrl = stack.match(linkRegex)[3];
@@ -31,7 +35,7 @@ var waitForStackTraceAndLink = function (id) {
         appendLinkToDescription(stackTrace, decodedLink, decodedLink);
         appendSpanWithInnerText(stackTrace, afterUrl);
     } else {
-        setTimeout(waitForStackTraceAndLink, 500, id);
+        setTimeout(waitForStackTraceAndLink, 500, testLink);
     }
 };
 
@@ -59,7 +63,7 @@ var linkStackTraceLinks = function () {
         var testLink = tests[i].getElementsByClassName("testWithDetails")[0];
         testLink.click();
         testLink.click();
-        waitForStackTraceAndLink("testDetails_anonymous_element_" + (i + 2));
+        waitForStackTraceAndLink(tests[i]);
     }
 };
 
