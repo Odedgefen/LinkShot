@@ -1,16 +1,38 @@
 var linkRegex =/(.*)(https?:\/[-a-zA-Z0-9+&@#\/()%?=~_|!:,.;]*[-a-zA-Z0-9+&@#\/()%=~_|])((.|\n)*)/;
 
-var appendLinkToDescription = function (description, link) {
+var appendLinkToDescription = function (description, href, linkText) {
     var a = document.createElement('a');
-    a.href = link;
+    a.href = href;
     a.target = "_blank";
-    a.innerHTML = "link";
+    a.innerHTML = linkText;
     description.appendChild(a);
+};
+
+var appendSpanWithInnerText = function (parent, text) {
+    var span = document.createElement('span');
+    span.innerHTML = text;
+    parent.appendChild(span);
 };
 
 var extractDecodedLinkFromString = function (str) {
     var link = str.match(linkRegex)[2];
     return link.replace(/&amp;/g, '&');
+};
+
+var waitForStackTraceAndLink = function (id) {
+    var stackTrace = document.getElementById(id).getElementsByClassName("fullStacktrace")[0];
+    if (stackTrace && stackTrace.innerHTML) {
+        var stack = stackTrace.innerHTML;
+        var beforeURL = stack.match(linkRegex)[1];
+        var decodedLink = extractDecodedLinkFromString(stack);
+        var afterUrl = stack.match(linkRegex)[3];
+        stackTrace.innerHTML = "";
+        appendSpanWithInnerText(stackTrace, beforeURL);
+        appendLinkToDescription(stackTrace, decodedLink, decodedLink);
+        appendSpanWithInnerText(stackTrace, afterUrl);
+    } else {
+        setTimeout(waitForStackTraceAndLink, 500, id);
+    }
 };
 
 var linkBuildProblems = function () {
@@ -25,11 +47,24 @@ var linkBuildProblems = function () {
         var descriptionText = problemDescriptions[i].innerHTML;
         var decodedLink = extractDecodedLinkFromString(descriptionText);
         problemDescriptions[i].innerHTML = descriptionText.match(linkRegex)[1];
-        appendLinkToDescription(problemDescriptions[i], decodedLink);
+        appendLinkToDescription(problemDescriptions[i], decodedLink, "link");
+    }
+};
+
+var linkStackTraceLinks = function () {
+    var testsCollection = document.getElementsByClassName("testList")[0].rows;
+    var tests = [].slice.call(testsCollection);
+    var numOfTests = tests.length;
+    for (var i = 0; i < numOfTests; i++) {
+        var testLink = tests[i].getElementsByClassName("testWithDetails")[0];
+        testLink.click();
+        testLink.click();
+        waitForStackTraceAndLink("testDetails_anonymous_element_" + (i + 2));
     }
 };
 
 linkBuildProblems();
+linkStackTraceLinks();
 
 
 
