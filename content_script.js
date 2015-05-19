@@ -14,7 +14,11 @@ var extractDecodedLinkFromString = function (str) {
 };
 
 var linkBuildProblems = function () {
-    var buildScriptProblemsWrapper = document.getElementsByClassName("expandCollapseContainer")[0].children[0];
+    var expandCollapseContainer = document.getElementsByClassName("expandCollapseContainer")[0];
+    if (!expandCollapseContainer) {
+        return;
+    }
+    var buildScriptProblemsWrapper = expandCollapseContainer.children[0];
     var problemDescriptions = buildScriptProblemsWrapper.getElementsByClassName("problemDescription");
     var numOfProblems = problemDescriptions.length;
     for (var i = 0; i < numOfProblems; i++) {
