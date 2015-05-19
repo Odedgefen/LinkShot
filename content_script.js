@@ -55,7 +55,7 @@ var linkBuildProblems = function () {
     }
 };
 
-var linkStackTraceLinks = function () {
+var linkStackTrace = function () {
     var testsCollection = document.getElementsByClassName("testList")[0].rows;
     var tests = [].slice.call(testsCollection);
     var numOfTests = tests.length;
@@ -70,7 +70,7 @@ var linkStackTraceLinks = function () {
 };
 
 linkBuildProblems();
-linkStackTraceLinks();
+linkStackTrace();
 
 
 
