@@ -56,15 +56,19 @@ var linkBuildProblems = function () {
 };
 
 var linkStackTrace = function () {
-    var testsCollection = document.getElementsByClassName("testList")[0].rows;
-    var tests = [].slice.call(testsCollection);
-    var numOfTests = tests.length;
-    for (var i = 0; i < numOfTests; i++) {
-        var testLink = tests[i].getElementsByClassName("testWithDetails")[0];
-        if (testLink && !tests[i].id) {
-            testLink.click();
-            testLink.click();
-            waitForStackTraceAndLink(tests[i]);
+    var testLists = document.getElementById("idfailedDl").getElementsByClassName("testList");
+    var numOfTestLists = testLists.length;
+    for (var j = 0; j < numOfTestLists; j++) {
+        var testsCollection = testLists[j].rows;
+        var tests = [].slice.call(testsCollection);
+        var numOfTests = tests.length;
+        for (var i = 0; i < numOfTests; i++) {
+            var testLink = tests[i].getElementsByClassName("testWithDetails")[0];
+            if (testLink && !tests[i].id) {
+                testLink.click();
+                testLink.click();
+                waitForStackTraceAndLink(tests[i]);
+            }
         }
     }
 };
