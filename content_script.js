@@ -1,4 +1,4 @@
-var linkRegex =/(.*)(https?:\/[-a-zA-Z0-9+&@#\/()%?=~_|!:,.;]*[-a-zA-Z0-9+&@#\/()%=~_|])((.|\n)*)/;
+var linkRegex = /(.*)(https?:\/[-a-zA-Z0-9+&@#\/()%?=~_|!:,.;]*[-a-zA-Z0-9+&@#\/()%=~_|])((.|\n)*)/;
 
 var appendLinkToDescription = function (description, href, linkText) {
     var a = document.createElement('a');
@@ -61,9 +61,11 @@ var linkStackTraceLinks = function () {
     var numOfTests = tests.length;
     for (var i = 0; i < numOfTests; i++) {
         var testLink = tests[i].getElementsByClassName("testWithDetails")[0];
-        testLink.click();
-        testLink.click();
-        waitForStackTraceAndLink(tests[i]);
+        if (testLink && !tests[i].id) {
+            testLink.click();
+            testLink.click();
+            waitForStackTraceAndLink(tests[i]);
+        }
     }
 };
 
