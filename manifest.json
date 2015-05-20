@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "LinkShot",
-  "description": "Transforms build problems and stack trace links into hyperlinks",
+  "description": "Transforms team city build problems and stack trace links into hyperlinks",
   "version": "1.0",
 
   "browser_action": {
