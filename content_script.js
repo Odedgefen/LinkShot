@@ -19,8 +19,8 @@ var extractDecodedLinkFromString = function (str) {
     return link.replace(/&amp;/g, '&');
 };
 
-var waitForStackTraceAndLink = function (testLink) {
-    var stackTraceWrapper = testLink.nextSibling.getElementsByClassName("fullStacktrace")[0];
+var waitForStackTraceAndLink = function (stackContainer) {
+    var stackTraceWrapper = stackContainer.getElementsByClassName("fullStacktrace")[0];
     if (stackTraceWrapper && stackTraceWrapper.innerHTML) {
         var stackTrace = stackTraceWrapper.innerHTML;
         if (stackTrace.indexOf("applitools") == -1) {
@@ -35,7 +35,7 @@ var waitForStackTraceAndLink = function (testLink) {
         appendLinkToDescription(stackTraceWrapper, decodedLink, decodedLink);
         appendSpanWithInnerText(stackTraceWrapper, afterUrl);
     } else {
-        setTimeout(waitForStackTraceAndLink, 500, testLink);
+        setTimeout(waitForStackTraceAndLink, 500, stackContainer);
     }
 };
 
@@ -63,10 +63,12 @@ var linkStackTrace = function () {
         var testsArray = [].slice.call(testsCollection);
         var numOfTests = testsArray.length;
         for (var currTestTableRow = 0; currTestTableRow < numOfTests; currTestTableRow++) {
-            var testLink = testsArray[currTestTableRow].getElementsByClassName("testWithDetails")[0];
-            if (testLink && !testsArray[currTestTableRow].id) {
-                testLink.click();
-                testLink.click();
+            var testWithDetailsWrapper = testsArray[currTestTableRow].getElementsByClassName("testWithDetails")[0];
+            if (testWithDetailsWrapper && !testsArray[currTestTableRow].id) {
+                testWithDetailsWrapper.click();
+                testWithDetailsWrapper.click();
+                waitForStackTraceAndLink(testsArray[currTestTableRow].nextSibling);
+            } else if (testsArray[currTestTableRow].getElementsByClassName("fullStacktrace")[0]) {
                 waitForStackTraceAndLink(testsArray[currTestTableRow]);
             }
         }
