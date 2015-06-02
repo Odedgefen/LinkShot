@@ -23,7 +23,7 @@ var waitForStackTraceAndLink = function (stackContainer) {
     var stackTraceWrapper = stackContainer.getElementsByClassName("fullStacktrace")[0];
     if (stackTraceWrapper && stackTraceWrapper.innerHTML) {
         var stackTrace = stackTraceWrapper.innerHTML;
-        if (stackTrace.indexOf("applitools") == -1) {
+        if (stackTrace.indexOf("https://eyes.applitools.com") == -1) {
             return;
         }
 
