@@ -39,12 +39,24 @@ var waitForStackTraceAndLink = function (stackContainer) {
     }
 };
 
+var getBuildScriptProblemWrapper = function (expandCollapseContainer) {
+    var buildScriptProblems = expandCollapseContainer.children;
+    for (var currChild = 0; currChild < buildScriptProblems.length; currChild++) {
+        var child = expandCollapseContainer.children[currChild];
+        var problemType = child.getElementsByClassName("problemType")[0];
+        if (problemType.innerHTML == "Problem reported from build script") {
+            return expandCollapseContainer.children[currChild];
+        }
+    }
+};
+
 var linkBuildProblems = function () {
     var expandCollapseContainer = document.getElementsByClassName("expandCollapseContainer")[0];
     if (!expandCollapseContainer) {
         return;
     }
-    var buildScriptProblemsWrapper = expandCollapseContainer.children[0];
+
+    var buildScriptProblemsWrapper = getBuildScriptProblemWrapper(expandCollapseContainer);
     var problemDescriptions = buildScriptProblemsWrapper.getElementsByClassName("problemDescription");
     var numOfProblems = problemDescriptions.length;
     for (var i = 0; i < numOfProblems; i++) {
