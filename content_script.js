@@ -58,6 +58,10 @@ var linkBuildProblems = function () {
     var numOfProblems = problemDescriptions.length;
     for (var i = 0; i < numOfProblems; i++) {
         var descriptionText = problemDescriptions[i].innerHTML;
+        if (descriptionText.indexOf("http") == -1) {
+            return;
+        }
+
         var decodedLink = extractDecodedLinkFromString(descriptionText);
         problemDescriptions[i].innerHTML = descriptionText.match(linkRegex)[1];
         appendLinkToDescription(problemDescriptions[i], decodedLink, "link");
