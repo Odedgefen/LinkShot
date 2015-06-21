@@ -39,7 +39,7 @@ var waitForStackTraceAndLink = function (stackContainer) {
     }
 };
 
-var getBuildScriptProblemWrapper = function (expandCollapseContainer) {
+var getBuildScriptProblemWrapperWhenCollapsed = function (expandCollapseContainer) {
     var buildScriptProblems = expandCollapseContainer.children;
     for (var currChild = 0; currChild < buildScriptProblems.length; currChild++) {
         var child = expandCollapseContainer.children[currChild];
@@ -52,11 +52,8 @@ var getBuildScriptProblemWrapper = function (expandCollapseContainer) {
 
 var linkBuildProblems = function () {
     var expandCollapseContainer = document.getElementsByClassName("expandCollapseContainer")[0];
-    if (!expandCollapseContainer) {
-        return;
-    }
-
-    var buildScriptProblemsWrapper = getBuildScriptProblemWrapper(expandCollapseContainer);
+    var buildScriptProblemsWrapper = expandCollapseContainer ?
+        getBuildScriptProblemWrapperWhenCollapsed(expandCollapseContainer) : document.getElementsByClassName("buildProblemsList")[0];
     var problemDescriptions = buildScriptProblemsWrapper.getElementsByClassName("problemDescription");
     var numOfProblems = problemDescriptions.length;
     for (var i = 0; i < numOfProblems; i++) {
