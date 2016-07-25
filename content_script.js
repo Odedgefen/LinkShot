@@ -3,7 +3,7 @@ var linkRegex = /(.*)(https?:\/[-a-zA-Z0-9+&@#\/()%?=~_|!:,.;]*[-a-zA-Z0-9+&@#\/
 var appendLinkToDescription = function (description, href, linkText) {
     var a = document.createElement('a');
     a.href = href;
-    a.target = "_blank";
+    a.target = '_blank';
     a.innerHTML = linkText;
     description.appendChild(a);
 };
@@ -20,14 +20,14 @@ var extractDecodedLinkFromString = function (str) {
 };
 
 var waitForStackTraceAndLink = function (stackContainer) {
-    var stackTraceWrapper = stackContainer.getElementsByClassName("fullStacktrace")[0];
+    var stackTraceWrapper = stackContainer.querySelector(".fullStacktrace");
     if (stackTraceWrapper && stackTraceWrapper.innerHTML) {
         var stackTrace = stackTraceWrapper.innerHTML;
-        if (stackTrace.indexOf("https://eyes.applitools.com") == -1) {
+        if (!stackTrace.includes('https://eyes.applitools.com')) {
             return;
         }
 
-        stackTraceWrapper.innerHTML = "";
+        stackTraceWrapper.innerHTML = '';
         var beforeURL = stackTrace.match(linkRegex)[1];
         var decodedLink = extractDecodedLinkFromString(stackTrace);
         var afterUrl = stackTrace.match(linkRegex)[3];
@@ -43,22 +43,32 @@ var getBuildScriptProblemWrapperWhenCollapsed = function (expandCollapseContaine
     var buildScriptProblems = expandCollapseContainer.children;
     for (var currChild = 0; currChild < buildScriptProblems.length; currChild++) {
         var child = expandCollapseContainer.children[currChild];
-        var problemType = child.getElementsByClassName("problemType")[0];
-        if (problemType.innerHTML == "Problem reported from build script") {
+        var problemType = child.querySelector('.problemType');
+        if (problemType.innerHTML == 'Problem reported from build script') {
             return expandCollapseContainer.children[currChild];
         }
     }
 };
 
-var linkBuildProblems = function () {
-    var expandCollapseContainer = document.getElementsByClassName("expandCollapseContainer")[0];
+var getTeamCityVersion = function () {
+    return document.querySelector('.greyNote').textContent.match(/\d+/)[0];
+};
+
+var getProblemDescriptions = function () {
+    var descriptionContainerSelector = getTeamCityVersion() >= 10 ? 'descriptionContainer' : 'problemDescription';
+    var expandCollapseContainer = document.querySelector('.expandCollapseContainer');
     var buildScriptProblemsWrapper = expandCollapseContainer ?
-        getBuildScriptProblemWrapperWhenCollapsed(expandCollapseContainer) : document.getElementsByClassName("buildProblemsList")[0];
-    var problemDescriptions = buildScriptProblemsWrapper.getElementsByClassName("problemDescription");
+        getBuildScriptProblemWrapperWhenCollapsed(expandCollapseContainer) : document.querySelector(".buildProblemsList");
+    return buildScriptProblemsWrapper ?
+        buildScriptProblemsWrapper.getElementsByClassName(descriptionContainerSelector) : [];
+};
+
+var linkBuildProblems = function () {
+    var problemDescriptions = getProblemDescriptions();
     var numOfProblems = problemDescriptions.length;
     for (var i = 0; i < numOfProblems; i++) {
         var descriptionText = problemDescriptions[i].innerHTML;
-        if (descriptionText.indexOf("http") == -1) {
+        if (!descriptionText.includes('http')) {
             return;
         }
 
@@ -69,19 +79,19 @@ var linkBuildProblems = function () {
 };
 
 var linkStackTrace = function () {
-    var testLists = document.getElementById("idfailedDl").getElementsByClassName("testList");
+    var testLists = document.querySelector('#idfailedDl').querySelectorAll('.testList');
     var numOfTestLists = testLists.length;
     for (var currTestList = 0; currTestList < numOfTestLists; currTestList++) {
         var testsCollection = testLists[currTestList].rows;
         var testsArray = [].slice.call(testsCollection);
         var numOfTests = testsArray.length;
         for (var currTestTableRow = 0; currTestTableRow < numOfTests; currTestTableRow++) {
-            var testWithDetailsWrapper = testsArray[currTestTableRow].getElementsByClassName("testWithDetails")[0];
+            var testWithDetailsWrapper = testsArray[currTestTableRow].querySelector('.testWithDetails');
             if (testWithDetailsWrapper && !testsArray[currTestTableRow].id) {
                 testWithDetailsWrapper.click();
                 testWithDetailsWrapper.click();
                 waitForStackTraceAndLink(testsArray[currTestTableRow].nextSibling);
-            } else if (testsArray[currTestTableRow].getElementsByClassName("fullStacktrace")[0]) {
+            } else if (testsArray[currTestTableRow].querySelector('.fullStacktrace')) {
                 waitForStackTraceAndLink(testsArray[currTestTableRow]);
             }
         }
