@@ -1,25 +1,16 @@
-var linkRegex = /(.*)(https?:\/[-a-zA-Z0-9+&@#\/()%?=~_|!:,.;]*[-a-zA-Z0-9+&@#\/()%=~_|])((.|\n)*)/;
+var URL_REGEX = /(https?:\/[-a-zA-Z0-9+&@#\/()%?=~_|!:,.;]*[-a-zA-Z0-9+&@#\/()%=~_|])/g;
 
-var appendLinkToDescription = function (description, href, linkText) {
-    var a = document.createElement('a');
-    a.href = href;
-    a.target = '_blank';
-    a.innerHTML = linkText;
-    description.appendChild(a);
-};
+function linkText(text, linkText) {
+    var replaceValue = linkText ?
+    '<a href="$1" target="_blank">' + linkText + '</a>' : '<a href="$1" target="_blank">$1</a>';
+    return text.replace(URL_REGEX, replaceValue);
+}
 
-var appendSpanWithInnerText = function (parent, text) {
-    var span = document.createElement('span');
-    span.innerHTML = text;
-    parent.appendChild(span);
-};
+function getTeamCityVersion() {
+    return document.querySelector('.greyNote').textContent.match(/\d+/)[0];
+}
 
-var extractDecodedLinkFromString = function (str) {
-    var link = str.match(linkRegex)[2];
-    return link.replace(/&amp;/g, '&');
-};
-
-var waitForStackTraceAndLink = function (stackContainer) {
+function waitForStackTraceAndLink(stackContainer) {
     var stackTraceWrapper = stackContainer.querySelector(".fullStacktrace");
     if (stackTraceWrapper && stackTraceWrapper.innerHTML) {
         var stackTrace = stackTraceWrapper.innerHTML;
@@ -27,43 +18,20 @@ var waitForStackTraceAndLink = function (stackContainer) {
             return;
         }
 
-        stackTraceWrapper.innerHTML = '';
-        var beforeURL = stackTrace.match(linkRegex)[1];
-        var decodedLink = extractDecodedLinkFromString(stackTrace);
-        var afterUrl = stackTrace.match(linkRegex)[3];
-        appendSpanWithInnerText(stackTraceWrapper, beforeURL);
-        appendLinkToDescription(stackTraceWrapper, decodedLink, decodedLink);
-        appendSpanWithInnerText(stackTraceWrapper, afterUrl);
+        stackTraceWrapper.innerHTML = linkText(stackTrace);
     } else {
-        setTimeout(waitForStackTraceAndLink, 500, stackContainer);
+        setTimeout(waitForStackTraceAndLink.bind(this, stackContainer), 500);
     }
-};
+}
 
-var getBuildScriptProblemWrapperWhenCollapsed = function (expandCollapseContainer) {
-    var buildScriptProblems = expandCollapseContainer.children;
-    for (var currChild = 0; currChild < buildScriptProblems.length; currChild++) {
-        var child = expandCollapseContainer.children[currChild];
-        var problemType = child.querySelector('.problemType');
-        if (problemType.innerHTML == 'Problem reported from build script') {
-            return expandCollapseContainer.children[currChild];
-        }
-    }
-};
+function getProblemDescriptions() {
+    var descriptionContainerSelector = getTeamCityVersion() >= 10 ? '.descriptionContainer' : '.problemDescription';
+    var buildProblems = document.querySelector('#buildProblemsDl');
 
-var getTeamCityVersion = function () {
-    return document.querySelector('.greyNote').textContent.match(/\d+/)[0];
-};
+    return buildProblems.querySelectorAll(descriptionContainerSelector)
+}
 
-var getProblemDescriptions = function () {
-    var descriptionContainerSelector = getTeamCityVersion() >= 10 ? 'descriptionContainer' : 'problemDescription';
-    var expandCollapseContainer = document.querySelector('.expandCollapseContainer');
-    var buildScriptProblemsWrapper = expandCollapseContainer ?
-        getBuildScriptProblemWrapperWhenCollapsed(expandCollapseContainer) : document.querySelector(".buildProblemsList");
-    return buildScriptProblemsWrapper ?
-        buildScriptProblemsWrapper.getElementsByClassName(descriptionContainerSelector) : [];
-};
-
-var linkBuildProblems = function () {
+function linkBuildProblems() {
     var problemDescriptions = getProblemDescriptions();
     var numOfProblems = problemDescriptions.length;
     for (var i = 0; i < numOfProblems; i++) {
@@ -72,13 +40,11 @@ var linkBuildProblems = function () {
             return;
         }
 
-        var decodedLink = extractDecodedLinkFromString(descriptionText);
-        problemDescriptions[i].innerHTML = descriptionText.match(linkRegex)[1];
-        appendLinkToDescription(problemDescriptions[i], decodedLink, "link");
+        problemDescriptions[i].innerHTML = linkText(descriptionText, 'link');
     }
-};
+}
 
-var linkStackTrace = function () {
+function linkStackTrace() {
     var testLists = document.querySelector('#idfailedDl').querySelectorAll('.testList');
     var numOfTestLists = testLists.length;
     for (var currTestList = 0; currTestList < numOfTestLists; currTestList++) {
@@ -96,7 +62,7 @@ var linkStackTrace = function () {
             }
         }
     }
-};
+}
 
 linkBuildProblems();
 linkStackTrace();
