@@ -35,8 +35,9 @@ function linkBuildProblems() {
     var problemDescriptions = getProblemDescriptions();
     var numOfProblems = problemDescriptions.length;
     for (var i = 0; i < numOfProblems; i++) {
+        var hasAnchorTag = problemDescriptions[i].querySelector('a');
         var descriptionText = problemDescriptions[i].innerHTML;
-        if (!descriptionText.includes('http')) {
+        if (hasAnchorTag || !descriptionText.includes('http')) {
             return;
         }
 
