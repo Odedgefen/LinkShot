@@ -18,6 +18,7 @@
     {
       "matches": [
         "*://*.dev.wix/viewLog.html*",
+        "*://*.wixpress.com/viewLog.html*",
         "*://*.dev.wixpress.com/viewLog.html*"
       ],
       "js": ["content_script.js"]
